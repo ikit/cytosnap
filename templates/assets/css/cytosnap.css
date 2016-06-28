@@ -1,0 +1,19 @@
+.cytosnap
+{
+	display: block;
+	position: relative;
+	margin: auto;
+	width:350px;
+	height:350px;
+	background-image: url('../img/cyto_underlayer.png');
+}
+
+.cytosnapOver
+{
+	position: absolute;
+	top:0;
+	left:0;
+	width:350px;
+	height:350px;
+	background-image: url('../img/cyto_overlayer.png');
+}

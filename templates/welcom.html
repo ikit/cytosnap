@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Cytotruc</title>
+
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous" />
+	<link rel="stylesheet" href="assets/css/cytosnap.css"/>
+</head>
+<body>
+	<h1>Salut</h1>
+
+<div class="cytosnap">
+	<img id="img" src="" alt="">
+	<div class="cytosnapOver">
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    $.ajax({
+        url: "http://localhost:5000/"
+    }).then(function(data) {
+    	console.debug(data.results.path)
+       //$("#img").attr("src", data.results.path)
+    
+    });
+});
+	
+</script>
+
+
+</body>
+</html>
