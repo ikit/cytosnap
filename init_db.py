@@ -9,7 +9,7 @@ from model import *
 
 
 DATABASE      = "Cytosnap"
-IMAGES_FOLDER = os.path.abspath(os.path.dirname(__file__)) + "/images/"
+IMAGES_FOLDER = os.path.abspath(os.path.dirname(__file__)) + "/static/images/"
 
 
 ''' creat/connect database '''

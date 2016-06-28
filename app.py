@@ -1,5 +1,8 @@
 #!env/python3
 import os
+import random
+import itertools
+from random import shuffle
 from flask import Flask, jsonify, render_template, session, request
 from flask.ext.session import Session
 from flask.ext.login import LoginManager
@@ -106,11 +109,13 @@ def before_request():
 
 
 
-'''
+
 @app.route('/')
 def index():
 	return render_template('welcom.html')
 
+
+'''
 @app.route('/login/', methods=['GET'])
 def login_user(login, password):
 	print (session)
@@ -165,6 +170,28 @@ def edit_image(image_id):
 	image.save()
 	return {}
 
+@app.route('/images/random', methods=['GET'])
+def random_image():
+	image = Image.objects.skip(random.randrange(0, Image.objects.count())).first()
+	props = Image.objects.distinct("answer")
+	shuffle(props)
+	questions = props[0:6]
+	if image.answer not in questions:
+		questions[random.randrange(0,6)] = image.answer
+
+
+	return jsonify({"results": dict(itertools.chain(image.export_data().items(), {"questions" : questions}.items())) })
+
+@app.route('/images/answer', methods=['POST'])
+def answer_image():
+	data = request.get_json()
+
+	image = Image.objects.skip(random.randrange(0, Image.objects.count())).first()
+	return jsonify({"results": image.export_data()})
+
+
+
+
 
 
 @app.route('/users/')
@@ -174,15 +201,15 @@ def get_users():
 
 @app.route('/users/<user_id>')
 def get_user(user_id):
-	return jsonify({"results": Image.objects.get(pk=user_id).export_data()})
+	return jsonify({"results": User.objects.get(pk=user_id).export_data()})
 
 @app.route('/users/', methods=['POST'])
 def new_user():
-	image = Image()
-	image.import_data(request.json)
-	Image.objects.add(image)
-	Image.save()
-	return jsonify({"results": image.export_data()})
+	user = User()
+	user.import_data(request.json)
+	user.objects.add(image)
+	user.save()
+	return jsonify({"results": user.export_data()})
 
 @app.route('/users/<user_id>', methods=['PUT'])
 def edit_user(user_id):

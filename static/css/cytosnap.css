@@ -8,6 +8,12 @@
 	background-image: url('../img/cyto_underlayer.png');
 }
 
+.cytosnap img
+{
+	max-width: 350px;
+	max-height: 350px;
+}
+
 .cytosnapOver
 {
 	position: absolute;
@@ -16,4 +22,10 @@
 	width:350px;
 	height:350px;
 	background-image: url('../img/cyto_overlayer.png');
+}
+
+/* Override/extend some bootstrap style */
+#qcm .btn
+{
+	margin-top: 5px;
 }

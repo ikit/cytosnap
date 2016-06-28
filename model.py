@@ -51,6 +51,21 @@ class User(Document):
 		s = Serializer(current_app.config['SECRET_KEY'], expires_in=expires_in)
 		return s.dumps({'id': self.id}).decode('utf-8')
 
+	def export_data(self):
+		return {
+			"fullname":self.fullname, 
+			"id": str(self.pk)
+			}
+
+	def import_data(self, data):
+		try:
+			self.fullname      = data['fullname']
+			self.login         = data['login']
+			set_password(data['password_hash'])
+		except KeyError as e:
+			raise ValidationError('Invalid order: missing ' + e.args[0])
+		return self
+
 	@staticmethod
 	def verify_auth_token(token):
 		s = Serializer(current_app.config['SECRET_KEY'])
