@@ -35,7 +35,7 @@ Session(app)
 
 
 ''' API Tools '''
-def SuccessResponse(data = None):
+def success_response(data = None):
 	if data is None:
 		results = {"success":True}
 	else:
@@ -43,7 +43,7 @@ def SuccessResponse(data = None):
 	return jsonify(results)
 
 
-def ErrorResponse(message="Unknown", code="0"):
+def error_response(message="Unknown", code="0"):
 	results = {"success":False, "message":message, "error_code":code}
 	return jsonify(results)
 
@@ -55,7 +55,7 @@ def check_auth(f):
 			user = User.from_id(session["user_id"])
 			if user is not None:
 				return f(*args, **kargs)
-		return ErrorResponse("Authentification is required", 403)
+		return error_response("Authentification is required", 403)
 	return called
 
 def current_user():
@@ -77,13 +77,13 @@ def before_request():
 				return
 
 		print ("Session not valid")
-		return ErrorResponse("Authentification is required", 403)
+		return error_response("Authentification is required", 403)
 	else:
 		if request.endpoint == 'login_user':
 			print("Trying to connect, not checking session auth yet")
 		else:
 			print ("Session not valid -> need to login")
-			return ErrorResponse("Authentification is required", 403)
+			return error_response("Authentification is required", 403)
 
 '''
 	if request :
@@ -232,12 +232,12 @@ def login_user():
 	user = User.objects(login=login).first()
 
 	if user is None:
-		return ErrorResponse("Bad login or password")
+		return error_response("Bad login or password")
 	else:
 		session['user_id'] = str(user.id)
 
 	print("Login user ", login, " : ", session["user_id"])
-	return SuccessResponse(session['user_id'])
+	return success_response(session['user_id'])
 
 
 
@@ -245,7 +245,7 @@ def login_user():
 def logout_user():
 	print("Logout - delete session : ", session["user_id"])
 	session.pop("user_id", None)
-	return SuccessResponse()
+	return success_response()
 
 
 
