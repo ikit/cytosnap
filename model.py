@@ -42,7 +42,7 @@ class User(Document):
 	password_hash = StringField(max_length=255, required=True)
 	service = StringField(max_length=255)
 	function = StringField(max_length=255)
-	last_habilitation = Dae
+	#last_habilitation = Dae
 
 	def set_password(self, password):
 		self.password_hash = generate_password_hash(password)

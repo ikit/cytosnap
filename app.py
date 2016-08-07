@@ -2,6 +2,8 @@
 import os
 import random
 import itertools
+import uuid
+
 from random import shuffle
 from flask import Flask, jsonify, render_template, session, request
 from flask.ext.session import Session
@@ -62,6 +64,7 @@ def current_user():
 	if 'user_id' in session:
 		user = User.from_id(session["user_id"])
 		return user
+	return None
 
 
 
@@ -74,16 +77,18 @@ def before_request():
 			user = User.from_id(ObjectId(session["user_id"]))
 			if user is not None:
 				print ("Session Valid")
+				session['username'] = user.fullname
 				return
 
 		print ("Session not valid")
 		return error_response("Authentification is required", 403)
 	else:
-		if request.endpoint == 'login_user':
+		if request.url_root == 'login_user' or request.url_root == 'login':
 			print("Trying to connect, not checking session auth yet")
 		else:
+			print (request.url_root)
 			print ("Session not valid -> need to login")
-			return error_response("Authentification is required", 403)
+			#return error_response("Authentification is required", 403)
 
 '''
 	if request :
@@ -115,19 +120,10 @@ def index():
 	return render_template('welcom.html')
 
 
-'''
 @app.route('/login/', methods=['GET'])
-def login_user(login, password):
-	print (session)
+def login_page():
+	return render_template('login.html')
 
-@app.route('/logout/', methods=['GET'])
-def logout_user(login):
-	return render_template('welcom.html')
-
-@app.route('/question/', methods=['GET'])
-def ask_question():
-	print (session)
-	return render_template('welcom.html')
 
 @app.route('/stats/', methods=['GET'])
 def stats_global():
@@ -136,7 +132,10 @@ def stats_global():
 @app.route('/stats/<user_id>', methods=['GET'])
 def stats_user():
 	return render_template('welcom.html')
-'''
+
+
+
+
 
 
 
@@ -174,22 +173,36 @@ def edit_image(image_id):
 def random_image():
 	image = Image.objects.skip(random.randrange(0, Image.objects.count())).first()
 	props = Image.objects.distinct("answer")
+	uid = uuid.uuid4()
 	shuffle(props)
 	questions = props[0:6]
 	if image.answer not in questions:
 		questions[random.randrange(0,6)] = image.answer
 
-
-	return jsonify({"results": dict(itertools.chain(image.export_data().items(), {"questions" : questions}.items())) })
+	session[uid] = (user.id, image.answer)
+	return jsonify({"results": dict(itertools.chain(image.export_data().items(), {"questions" : questions}.items(), {"qid" : uid})) })
 
 @app.route('/images/answer', methods=['POST'])
 def answer_image():
 	data = request.get_json()
+	uid = data.get('uid')
+	answer = data.get('answer')
+	user_answer = session.get(uid)
 
-	image = Image.objects.skip(random.randrange(0, Image.objects.count())).first()
-	return jsonify({"results": image.export_data()})
+	if (answer == user_answer):
+		# good !
+		# save stat
+		# continue with next question
+		# finish
+		pass
+	else:
+		# bad ...
+		# next question
 
 
+
+
+	return random_image()
 
 
 
@@ -220,12 +233,10 @@ def edit_user(user_id):
 
 
 
-@app.route('/users/login', methods=['POST'])
+@app.route('/users/login', methods=['GET'])
 def login_user():
 	print ("LOGIN")
-	data = request.get_json()
-	print (data)
-
+	data = request.get_json(force=False)
 	login    = data.get("login")
 	password = data.get("password")
 

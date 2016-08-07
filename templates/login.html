@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<title>Cytosnap</title>
+
+	<!-- CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/cytosnap.css') }}"/>
+
+	<!-- JS -->
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+</head>
+<body>
+	<div class="container">
+
+		<form id="loginForm" class="form-signin" action="/users/login" method="get">
+			<h2 class="form-signin-heading">Veuillez vous identifier</h2>
+			<label for="inputLogin" class="sr-only">Login</label>
+			<input type="text" id="inputLogin" class="form-control" placeholder="Login" required autofocus>
+			<label for="inputPassword" class="sr-only">Mot de passe</label>
+			<input type="password" id="inputPassword" class="form-control" placeholder="Password" required>
+			<br/>
+			<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+		</form>
+
+	</div> <!-- /container -->
+
+
+
+<script type="text/javascript">
+	$(document).ready(function() 
+	{
+		// Lorsque je soumets le formulaire
+		$('#loginForm').on('submit', function(e) 
+		{
+			// Disable default behavior of the form 
+			e.preventDefault();
+
+			// Retrieve form object
+			var $this = $(this);
+
+			// Check that form is set
+			var login = $('#inputLogin').val();
+			var pwd = $('#inputPassword').val();
+
+			if(login === '' || pwd === '') 
+			{
+				alert('Merci de renseigner tout Les champs.');
+			}
+			else
+			{
+				// Send credential to the server
+				$.ajax({
+					url: $this.attr('/users/login'),
+					type: $this.attr('get'),
+					data: $this.serialize(),
+					success: function(html) 
+					{
+						window.location.replace("/");
+					}
+				});
+			}
+		});
+	});
+
+</script>
+
+</body>
+</html>
